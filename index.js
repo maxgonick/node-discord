@@ -6,7 +6,8 @@ const port = 8001;
 app.use(express.json());
 
 app.post("/", (req, res) => {
-  sendMessage(req.body);
+  console.log(req.body);
+  sendMessage(req.body.body);
   res.status(200).send("received");
 });
 
