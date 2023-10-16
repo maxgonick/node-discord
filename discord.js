@@ -4,7 +4,10 @@ import { EmbedBuilder } from "discord.js";
 import "dotenv/config";
 const sendMessage = async (body) => {
   const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);
-
+  //Check for Truncation
+  if ((body.msgBody.length > 4096)) {
+    body.msgBody = body.msgBody.substring(0, 4093) + "...";
+  }
   const myEmbed = new EmbedBuilder()
     .setTitle(body.subject)
     .setURL("https://mail.google.com/mail/u/0/#inbox/" + body.emailId)
@@ -12,15 +15,12 @@ const sendMessage = async (body) => {
       name: body.sender,
     })
     .addFields(
-      {
-        name: "From:",
-        value: body.sender,
-      },
-      { name: "Date:", value: body.date },
-      { name: "Body:", value: body.msgBody }
-    );
+      { name: "Date:", value: body.date }
+    )
+    .setDescription(body.msgBody);
 
   try {
+    //Magic Constants for Length of Embed Messages
     await rest.post(Routes.channelMessages(process.env.CHANNEL_ID), {
       body: {
         embeds: [myEmbed],
